@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class CubicInterpolationSpline1D implements Spline {
-    // Точки сетки
+    // точки сетки
     private final List<Point> points = new ArrayList<>();
-    // Коэффициенты сплайна на каждом сегменте [a, b, c, d]
+    // коэффициенты сплайна на каждом сегменте
     private double[] a;
     private double[] b;
     private double[] c;
@@ -31,16 +31,14 @@ public final class CubicInterpolationSpline1D implements Spline {
         // длина текущего и следующего отрезков
         double h_current, h_next;
 
-        // изменение размеров массивов коэффициентов
         a = new double[Num_Segment];
         b = new double[Num_Segment];
         c = new double[Num_Segment];
         d = new double[Num_Segment];
 
-        // вектор правой части СЛАУ
         double[] f = new double[Num_Segment - 1];
 
-        // вычисление коэффициентов трёхдиагональной системы для c[i]
+        // вычисление коэффициентов трёхдиагональной системы
         for (int i = 0; i < Num_Segment - 1; i++) {
             // длина текущего и следующего отрезков
             h_current = Points.get(i + 1).x() - Points.get(i).x();
@@ -49,7 +47,6 @@ public final class CubicInterpolationSpline1D implements Spline {
             // диагональ
             b[i] = 2.0 * (h_current + h_next);
             // нижняя диагональ (сдвиг на +1)
-            // a[0] здесь не используется, как и в исходном C++
             this.a[i + 1] = h_current;
             // верхняя диагональ
             d[i] = h_next;
@@ -74,7 +71,6 @@ public final class CubicInterpolationSpline1D implements Spline {
         // краевые условия нулевой кривизны
         c[0] = 0.0;
 
-        // коэффициенты a,b,d на сегментах [i, i+1) кроме последнего
         for (int i = 0; i < Num_Segment - 1; i++) {
             h_current = Points.get(i + 1).x() - Points.get(i).x();
             a[i] = F_Value.get(i);
@@ -83,7 +79,6 @@ public final class CubicInterpolationSpline1D implements Spline {
             d[i] = (c[i + 1] - c[i]) / h_current / 3.0;
         }
 
-        // на последнем сегменте
         h_current = Points.get(Num_Segment).x() - Points.get(Num_Segment - 1).x();
         a[Num_Segment - 1] = F_Value.get(Num_Segment - 1);
         b[Num_Segment - 1] = (F_Value.get(Num_Segment) - F_Value.get(Num_Segment - 1)) / h_current
@@ -91,8 +86,6 @@ public final class CubicInterpolationSpline1D implements Spline {
         d[Num_Segment - 1] = -c[Num_Segment - 1] / h_current / 3.0;
     }
 
-    // Вычислить значение сплайна и его производных в точке P.
-    // Результат: res[0]=f, res[1]=f', res[2]=f''
     @Override
     public void getValue(final Point P, final double[] Res) {
         if (Res == null || Res.length < 3) {
@@ -125,7 +118,6 @@ public final class CubicInterpolationSpline1D implements Spline {
         throw new IllegalArgumentException("The point is not found in the segments...");
     }
 
-    // Удобный метод (совместим с интерфейсом): вернуть массив [f, f', f'']
     public double[] getValue(final Point p) {
         double[] out = new double[3];
         getValue(p, out);

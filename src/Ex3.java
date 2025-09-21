@@ -78,7 +78,7 @@ public class Ex3 {
     }
 
 
-    // максимум ошибок на плотной проверочной сетке (исключаем узлы по eps)
+    // максимум ошибок на плотной проверочной сетке
     private static double[] maxErrorsOnDenseGrid(Spline s,
                                                  DoubleUnaryOperator f, DoubleUnaryOperator df, DoubleUnaryOperator d2f,
                                                  double a, double b, int M) {
@@ -90,7 +90,7 @@ public class Ex3 {
         for (int i = 0; i < M; i++) {
             double x = a + i * h;
 
-            // сдвигаем x на полшага, чтобы гарантированно не попасть в узлы исходной сетки
+            // сдвигаем x на полшага, чтобы не попасть в узлы исходной сетки
             double xShifted = Math.min(b - eps, Math.max(a + eps, x + 0.5 * h));
 
             s.getValue(new Point(xShifted, 0, 0), res);
