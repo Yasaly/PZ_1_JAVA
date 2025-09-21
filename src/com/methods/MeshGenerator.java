@@ -15,7 +15,7 @@ public final class MeshGenerator {
         return pts;
     }
 
-    // адаптивная сетка (всегда уплотнение слева)
+    // адаптивная сетка
     public static List<Point> graded(double a, double b, int N, double r) {
         if (N < 1) throw new IllegalArgumentException("N >= 1");
         if (r < 1.0) throw new IllegalArgumentException("r >= 1");
